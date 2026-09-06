@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:Moviles2.ViewModels"
+             x:Class="Moviles2.Views.ProfileDetailsPage"
+             Title="Detalles del Perfil"
+             BackgroundColor="Black">
+
+    <ContentPage.BindingContext>
+        <vm:ProfileDetailsViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="30" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
+
+        <Label Text="Perfil Guardado" FontSize="28" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+
+        <Border HeightRequest="150" WidthRequest="150" HorizontalOptions="Center" Stroke="LightGray" StrokeThickness="1">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="75" />
+            </Border.StrokeShape>
+            <Image Source="{Binding UsuarioRecibido.ImagenPerfil}" Aspect="AspectFill" />
+        </Border>
+
+        <Label Text="{Binding UsuarioRecibido.Nombre, StringFormat='Nombre: {0}'}" FontSize="20" TextColor="White" HorizontalOptions="Center"/>
+        <Label Text="{Binding UsuarioRecibido.Edad, StringFormat='Edad: {0} años'}" FontSize="20" TextColor="White" HorizontalOptions="Center"/>
+        <Label Text="{Binding UsuarioRecibido.Descripcion, StringFormat='Bio: {0}'}" FontSize="16" TextColor="LightGray" HorizontalOptions="Center"/>
+
+        <!-- Feedback de la validación -->
+        <Label Text="{Binding MensajeValidacion}" TextColor="{Binding ColorValidacion}" FontAttributes="Italic" HorizontalOptions="Center" Margin="0,20"/>
+
+        <!-- Botón para regresar -->
+        <Button Text="Volver" Command="{Binding VolverCommand}" BackgroundColor="#2B0B98" TextColor="White" CornerRadius="8" WidthRequest="200" HeightRequest="50" HorizontalOptions="Center"/>
+
+    </VerticalStackLayout>
+</ContentPage>

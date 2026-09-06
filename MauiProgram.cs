@@ -1,5 +1,5 @@
-﻿using CommunityToolkit.Maui;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using CommunityToolkit.Maui; 
 
 namespace Moviles2
 {
@@ -18,7 +18,7 @@ namespace Moviles2
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();
