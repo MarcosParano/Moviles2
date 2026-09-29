@@ -6,13 +6,9 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Title="Moviles2">
 
-    
-    <TabBar>
-        <Tab Title="Mi Perfil">
-            <ShellContent
-                Route="MainPage"
-                ContentTemplate="{DataTemplate views:MainPage}" />
-        </Tab>
-    </TabBar>
+    <ShellContent
+        Title="Trámite"
+        Route="MainPage"
+        ContentTemplate="{DataTemplate views:MainPage}" />
 
 </Shell>

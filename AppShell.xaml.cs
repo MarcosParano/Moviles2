@@ -1,5 +1,4 @@
 ﻿using Microsoft.Maui.Controls;
-using Moviles2.Views;
 
 namespace Moviles2
 {
@@ -8,9 +7,6 @@ namespace Moviles2
         public AppShell()
         {
             InitializeComponent();
-
-            
-            Routing.RegisterRoute(nameof(ProfileDetailsPage), typeof(ProfileDetailsPage));
         }
     }
 }

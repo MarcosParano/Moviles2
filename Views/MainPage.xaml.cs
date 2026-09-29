@@ -5,12 +5,9 @@ namespace Moviles2.Views
 {
     public partial class MainPage : ContentPage
     {
-        
-        public MainPage(ProfileViewModel viewModel)
+        public MainPage(TramiteViewModel viewModel)
         {
             InitializeComponent();
-
-            
             BindingContext = viewModel;
         }
     }

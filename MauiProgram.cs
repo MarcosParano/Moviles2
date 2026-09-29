@@ -1,7 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
-using Moviles2.ViewModels; 
-using Moviles2.Views;     
+using Moviles2.ViewModels;
+using Moviles2.Views;
+using Moviles2.Repositories;
 
 namespace Moviles2
 {
@@ -19,14 +20,18 @@ namespace Moviles2
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            
-            // Registramos los ViewModels
-            builder.Services.AddSingleton<ProfileViewModel>();
-            builder.Services.AddTransient<ProfileDetailsViewModel>(); // Usamos Transient para que la vista de detalles se recargue limpia cada vez
+            // 1. Registro de la Capa de Datos
+            builder.Services.AddSingleton<TramiteRepositorySQLite>(); ;
 
-            // Registramos las Vistas 
-            builder.Services.AddSingleton<MainPage>();
-            builder.Services.AddTransient<ProfileDetailsPage>();
+            // 2. Registro del ViewModel
+            builder.Services.AddTransient<TramiteViewModel>();
+
+            // 3. Registro de la Vista
+            builder.Services.AddTransient<MainPage>();
+
+#if DEBUG
+            builder.Logging.AddDebug();
+#endif
 
             return builder.Build();
         }
