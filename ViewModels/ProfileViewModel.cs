@@ -40,7 +40,7 @@ namespace Moviles2.ViewModels
                 Nombre = "Marcos Parano",
                 Edad = 30,
                 Descripcion = "Estudiante de Sistemas.",
-                ImagenPerfil = "https://static.wikia.nocookie.net/esstarwars/images/5/58/BobaFettMain2.jpg/revision/latest?cb=20120126225714"
+                ImagenPerfil = "https://picsum.photos/200"
             };
 
             SaveCommand = new Command(async () => await ExecuteSaveAsync());

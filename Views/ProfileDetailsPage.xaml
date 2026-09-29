@@ -5,10 +5,8 @@
              x:Class="Moviles2.Views.ProfileDetailsPage"
              Title="Detalles del Perfil"
              BackgroundColor="Black">
-
-    <ContentPage.BindingContext>
-        <vm:ProfileDetailsViewModel />
-    </ContentPage.BindingContext>
+    
+    
 
     <VerticalStackLayout Padding="30" Spacing="20" HorizontalOptions="Center" VerticalOptions="Center">
 

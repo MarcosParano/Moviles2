@@ -6,9 +6,6 @@
              Title="Mi Perfil"
              BackgroundColor="Black">
 
-    <ContentPage.BindingContext>
-        <vm:ProfileViewModel />
-    </ContentPage.BindingContext>
 
     <ScrollView>
         <VerticalStackLayout Padding="30" Spacing="20">
