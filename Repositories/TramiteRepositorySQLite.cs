@@ -2,10 +2,11 @@
 using System.Threading.Tasks;
 using SQLite;
 using Moviles2.Models;
+using Moviles2.Interfaces;
 
 namespace Moviles2.Repositories
 {
-    public class TramiteRepositorySQLite
+    public class TramiteRepositorySQLite : ITramiteRepository
     {
         private SQLiteAsyncConnection _database;
 
@@ -14,19 +15,17 @@ namespace Moviles2.Repositories
             
             var dbPath = Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.LocalApplicationData), "tramites.db3");
 
-            
             _database = new SQLiteAsyncConnection(dbPath);
 
-            
             _database.CreateTableAsync<TramiteVigilador>().Wait();
         }
 
         public async Task<TramiteVigilador> ObtenerTramiteAsync()
         {
-            // Buscamos si ya hay un trámite guardado
+            // Busca si ya hay un trámite guardado
             var tramite = await _database.Table<TramiteVigilador>().FirstOrDefaultAsync();
 
-            // Si no hay nada, creamos uno vacío
+            // Si no hay nada, crea uno vacío
             if (tramite == null)
             {
                 tramite = new TramiteVigilador { NombreSolicitante = "" };

@@ -1,25 +1,27 @@
-﻿using Microsoft.Maui.Controls;
-using Moviles2.Models;
-using Moviles2.Repositories;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using Microsoft.Maui.Controls;
+using Moviles2.Models;
+using Moviles2.Repositories;
+using Moviles2.Interfaces;
 
 namespace Moviles2.ViewModels
 {
     public class TramiteViewModel : BindableObject
     {
-        private readonly TramiteRepositorySQLite _repository;
+        private readonly ITramiteRepository _repository;
         private TramiteVigilador? _tramite;
 
-        public TramiteViewModel(TramiteRepositorySQLite repository)
+        public TramiteViewModel(ITramiteRepository repository)
         {
             _repository = repository;
 
             LoadCommand = new Command(async () => await CargarTramiteAsync());
             GuardarCommand = new Command(async () => await GuardarAsync());
             PresentarCommand = new Command(Presentar, () => _tramite?.RequisitosCompletos() == true && _tramite?.EstaPresentado == false);
+            NuevoTramiteCommand = new Command(async () => await ReiniciarTramiteAsync());
 
             LoadCommand.Execute(null);
         }
@@ -92,8 +94,7 @@ namespace Moviles2.ViewModels
                 if (!_tramite.TieneCurso) faltantes.Add("- Curso de Capacitación");
                 if (!_tramite.TieneReincidencia) faltantes.Add("- Certificado de Reincidencia");
 
-                if (faltantes.Count == 0)
-                    return "¡Todos los requisitos completos!\nListo para presentar.";
+                if (faltantes.Count == 0) return "¡Todos los requisitos completos!\nListo para presentar.";
 
                 return "En proceso. Faltan los siguientes requisitos:\n" + string.Join("\n", faltantes);
             }
@@ -102,11 +103,12 @@ namespace Moviles2.ViewModels
         public ICommand LoadCommand { get; }
         public ICommand GuardarCommand { get; }
         public ICommand PresentarCommand { get; }
+        public ICommand NuevoTramiteCommand { get; }
 
         private void NotificarCambios(string nombrePropiedad)
         {
-            OnPropertyChanged(nombrePropiedad); 
-            OnPropertyChanged(nameof(EstadoGeneral)); 
+            OnPropertyChanged(nombrePropiedad);
+            OnPropertyChanged(nameof(EstadoGeneral));
             ((Command)PresentarCommand).ChangeCanExecute();
         }
 
@@ -124,6 +126,7 @@ namespace Moviles2.ViewModels
             OnPropertyChanged(nameof(TieneReincidencia));
             OnPropertyChanged(nameof(FechaReincidencia));
             OnPropertyChanged(nameof(EstadoGeneral));
+            ((Command)PresentarCommand).ChangeCanExecute();
         }
 
         private async Task GuardarAsync()
@@ -143,7 +146,36 @@ namespace Moviles2.ViewModels
                 _tramite.AprobarHabilitacion();
                 OnPropertyChanged(nameof(EstadoGeneral));
                 ((Command)PresentarCommand).ChangeCanExecute();
+
                 await GuardarAsync();
+
+                var parametros = new Dictionary<string, object>
+                {
+                    { "MiTramite", _tramite }
+                };
+                await Shell.Current.GoToAsync("ResumenTramitePage", parametros);
+            }
+        }
+
+        private async Task ReiniciarTramiteAsync()
+        {
+            if (_tramite != null)
+            {
+                _tramite.NombreSolicitante = string.Empty;
+                _tramite.TieneDNI = false;
+                _tramite.TieneBiometricos = false;
+                _tramite.TieneSecundario = false;
+                _tramite.TieneCurso = false;
+                _tramite.TieneReincidencia = false;
+                _tramite.FechaBiometricos = DateTime.Today;
+                _tramite.FechaCurso = DateTime.Today;
+                _tramite.FechaReincidencia = DateTime.Today;
+                _tramite.EstaPresentado = false;
+                _tramite.EstaHabilitado = false;
+                _tramite.FechaVencimiento = null;
+
+                await _repository.GuardarTramiteAsync(_tramite);
+                await CargarTramiteAsync();
             }
         }
     }

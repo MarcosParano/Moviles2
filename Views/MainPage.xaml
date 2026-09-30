@@ -81,6 +81,13 @@
                     TextColor="White"
                     FontAttributes="Bold" />
 
+            <!-- Botón para limpiar los datos -->
+            <Button Text="Limpiar / Nuevo Trámite" 
+                    Command="{Binding NuevoTramiteCommand}" 
+                    BackgroundColor="DarkRed" 
+                    TextColor="White"
+                    FontAttributes="Bold" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

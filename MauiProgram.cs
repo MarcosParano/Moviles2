@@ -3,6 +3,7 @@ using CommunityToolkit.Maui;
 using Moviles2.ViewModels;
 using Moviles2.Views;
 using Moviles2.Repositories;
+using Moviles2.Interfaces;
 
 namespace Moviles2
 {
@@ -20,14 +21,16 @@ namespace Moviles2
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // 1. Registro de la Capa de Datos
-            builder.Services.AddSingleton<TramiteRepositorySQLite>(); ;
+            // Registro de la Base de Datos usando la Interfaz (Patrón Repository)
+            builder.Services.AddSingleton<ITramiteRepository, TramiteRepositorySQLite>();
 
-            // 2. Registro del ViewModel
+            // Registro de ViewModels
             builder.Services.AddTransient<TramiteViewModel>();
+            builder.Services.AddTransient<ResumenTramiteViewModel>();
 
-            // 3. Registro de la Vista
+            // Registro de Vistas (Pages)
             builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<ResumenTramitePage>();
 
 #if DEBUG
             builder.Logging.AddDebug();
