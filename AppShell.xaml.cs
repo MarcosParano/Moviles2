@@ -9,8 +9,9 @@ namespace Moviles2
         {
             InitializeComponent();
 
-            // Registramos la ruta para la navegación por parámetros hacia el detalle
+            // Rutas secundarias que no son pestañas
             Routing.RegisterRoute("ResumenTramitePage", typeof(ResumenTramitePage));
+            Routing.RegisterRoute("DetalleApiPage", typeof(DetalleApiPage));
         }
     }
 }

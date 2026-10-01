@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Moviles2.Views.ListaPostulantesPage"
+             Title="Base de Datos API"
+             BackgroundColor="Black">
+
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <Button Grid.Row="0" Text="Cargar Datos API" Command="{Binding CargarDatosCommand}" 
+                Margin="15" BackgroundColor="Blue" TextColor="White" FontAttributes="Bold" />
+
+        <Label Grid.Row="1" Text="{Binding MensajeEstado}" TextColor="#FFB347" 
+               FontAttributes="Italic" HorizontalOptions="Center" Margin="10,0,10,10" 
+               HorizontalTextAlignment="Center" />
+
+        <ActivityIndicator Grid.Row="2" IsRunning="{Binding EstaCargando}" Color="White" 
+                           HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1" />
+
+        <CollectionView Grid.Row="2" ItemsSource="{Binding Postulantes}" SelectionMode="Single"
+                        SelectionChangedCommand="{Binding SeleccionarPostulanteCommand}"
+                        SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border Stroke="Gray" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="15" Margin="10,5" BackgroundColor="#1E1E1E">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Name}" TextColor="White" FontSize="18" FontAttributes="Bold" />
+                            <Label Text="{Binding Email}" TextColor="LightGray" FontSize="14" />
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Moviles2.Views.DetalleApiPage"
+             Title="Ficha Técnica API"
+             BackgroundColor="Black">
+
+    <VerticalStackLayout Padding="20" Spacing="20">
+        <Label Text="Detalle del Postulante" FontSize="24" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center"/>
+
+        <Border BackgroundColor="#1E1E1E" Stroke="Gray" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="20">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="ID de Registro:" TextColor="LightGray" FontSize="12"/>
+                <Label Text="{Binding Postulante.Id}" TextColor="White" FontSize="16" FontAttributes="Bold"/>
+
+                <Label Text="Nombre Completo:" TextColor="LightGray" FontSize="12" Margin="0,10,0,0"/>
+                <Label Text="{Binding Postulante.Name}" TextColor="White" FontSize="20" FontAttributes="Bold"/>
+
+                <Label Text="Correo Electrónico:" TextColor="LightGray" FontSize="12" Margin="0,10,0,0"/>
+                <Label Text="{Binding Postulante.Email}" TextColor="#FFB347" FontSize="16"/>
+
+                <Label Text="Teléfono de Contacto:" TextColor="LightGray" FontSize="12" Margin="0,10,0,0"/>
+                <Label Text="{Binding Postulante.Phone}" TextColor="White" FontSize="16"/>
+            </VerticalStackLayout>
+        </Border>
+
+        <Button Text="Volver a la Lista" 
+                Command="{Binding VolverCommand}" 
+                BackgroundColor="#333333" 
+                TextColor="White"
+                FontAttributes="Bold"
+                Margin="0,20,0,0" />
+    </VerticalStackLayout>
+</ContentPage>

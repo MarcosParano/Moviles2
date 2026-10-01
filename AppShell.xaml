@@ -7,10 +7,13 @@
     Title="Trámites CABA"
     BackgroundColor="Black">
 
-    <!-- Navegación compleja: Pestañas inferiores -->
     <TabBar>
-        <Tab Title="Nuevo Trámite">
+        <Tab Title="Trámite Local">
             <ShellContent Route="MainPage" ContentTemplate="{DataTemplate views:MainPage}" />
+        </Tab>
+
+        <Tab Title="API Postulantes">
+            <ShellContent Route="ListaPostulantesPage" ContentTemplate="{DataTemplate views:ListaPostulantesPage}" />
         </Tab>
     </TabBar>
 

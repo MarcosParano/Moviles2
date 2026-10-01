@@ -75,12 +75,24 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <Compile Update="Views\ListaPostulantesPage.xaml.cs">
+	    <DependentUpon>ListaPostulantesPage.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\DetalleApiPage.xaml.cs">
+	    <DependentUpon>DetalleApiPage.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Views\ResumenTramitePage.xaml.cs">
 	    <DependentUpon>ResumenTramitePage.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\ListaPostulantesPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\DetalleApiPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\ResumenTramitePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
 using Moviles2.Models;
+using Moviles2.Interfaces;
 
 namespace Moviles2.Repositories
 {
-    public class TramiteRepositoryFake
+    public class TramiteRepositoryFake : ITramiteRepository
     {
         private TramiteVigilador _tramiteEnMemoria;
 

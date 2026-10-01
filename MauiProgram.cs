@@ -4,6 +4,7 @@ using Moviles2.ViewModels;
 using Moviles2.Views;
 using Moviles2.Repositories;
 using Moviles2.Interfaces;
+using System.Net.Http; // Necesario para la API
 
 namespace Moviles2
 {
@@ -21,16 +22,18 @@ namespace Moviles2
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            // Registro de la Base de Datos usando la Interfaz (Patrón Repository)
             builder.Services.AddSingleton<ITramiteRepository, TramiteRepositorySQLite>();
+            builder.Services.AddSingleton<HttpClient>();
 
-            // Registro de ViewModels
             builder.Services.AddTransient<TramiteViewModel>();
             builder.Services.AddTransient<ResumenTramiteViewModel>();
-
-            // Registro de Vistas (Pages)
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<ResumenTramitePage>();
+
+            builder.Services.AddTransient<ListaPostulantesViewModel>();
+            builder.Services.AddTransient<DetalleApiViewModel>();
+            builder.Services.AddTransient<ListaPostulantesPage>();
+            builder.Services.AddTransient<DetalleApiPage>();
 
 #if DEBUG
             builder.Logging.AddDebug();
