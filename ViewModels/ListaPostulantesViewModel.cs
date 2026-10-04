@@ -14,8 +14,10 @@ namespace Moviles2.ViewModels
     public class ListaPostulantesViewModel : BindableObject
     {
         private readonly HttpClient _httpClient;
-        private string _mensajeEstado = "Presiona 'Cargar Datos API' para obtener postulantes.";
+        private string _mensajeEstado = "Presiona 'Cargar Datos API'.";
         private bool _estaCargando;
+
+        private List<PostulanteApi> _todosLosPostulantes = new();
 
         public ObservableCollection<PostulanteApi> Postulantes { get; } = new();
 
@@ -34,24 +36,33 @@ namespace Moviles2.ViewModels
         public ICommand CargarDatosCommand { get; }
         public ICommand SeleccionarPostulanteCommand { get; }
 
+        public ICommand FiltrarPresentadosCommand { get; }
+        public ICommand FiltrarEnTramiteCommand { get; }
+        public ICommand MostrarTodosCommand { get; }
+
         public ListaPostulantesViewModel(HttpClient httpClient)
         {
             _httpClient = httpClient;
             CargarDatosCommand = new Command(async () => await ObtenerPostulantesAsync());
             SeleccionarPostulanteCommand = new Command<PostulanteApi>(async (p) => await IrADetalleAsync(p));
+
+            FiltrarPresentadosCommand = new Command(() => AplicarFiltro("Presentado"));
+            FiltrarEnTramiteCommand = new Command(() => AplicarFiltro("En Trámite"));
+            MostrarTodosCommand = new Command(() => AplicarFiltro("Todos"));
         }
 
         private async Task ObtenerPostulantesAsync()
         {
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                MensajeEstado = "Error: Sin conexión a Internet. Verificá tu red.";
+                MensajeEstado = "Error: Sin conexión a Internet.";
                 return;
             }
 
             EstaCargando = true;
-            MensajeEstado = "Descargando datos desde la API...";
+            MensajeEstado = "Descargando datos...";
             Postulantes.Clear();
+            _todosLosPostulantes.Clear();
 
             try
             {
@@ -59,7 +70,7 @@ namespace Moviles2.ViewModels
 
                 if (!response.IsSuccessStatusCode)
                 {
-                    MensajeEstado = $"Error HTTP: El servidor respondió con código {response.StatusCode}";
+                    MensajeEstado = $"Error HTTP: {response.StatusCode}";
                     return;
                 }
 
@@ -69,25 +80,21 @@ namespace Moviles2.ViewModels
 
                 if (lista != null)
                 {
+                    var rnd = new Random();
                     foreach (var item in lista)
-                        Postulantes.Add(item);
+                    {
+                        item.EstadoTramite = rnd.Next(2) == 0 ? "Presentado" : "En Trámite";
 
-                    MensajeEstado = $"Éxito: Se cargaron {lista.Count} postulantes desde internet.";
+                        _todosLosPostulantes.Add(item);
+                        Postulantes.Add(item);          
+                    }
+
+                    MensajeEstado = $"Éxito: {lista.Count} postulantes cargados.";
                 }
-            }
-            catch (HttpRequestException ex)
-            {
-                MensajeEstado = "Error de red: No se pudo conectar al servidor.";
-                Console.WriteLine(ex.Message);
-            }
-            catch (JsonException ex)
-            {
-                MensajeEstado = "Error de formato: Los datos recibidos no son válidos.";
-                Console.WriteLine(ex.Message);
             }
             catch (Exception ex)
             {
-                MensajeEstado = "Error inesperado en la aplicación.";
+                MensajeEstado = "Error al obtener datos.";
                 Console.WriteLine(ex.Message);
             }
             finally
@@ -96,15 +103,23 @@ namespace Moviles2.ViewModels
             }
         }
 
+        private void AplicarFiltro(string estado)
+        {
+            Postulantes.Clear();
+            foreach (var p in _todosLosPostulantes)
+            {
+                if (estado == "Todos" || p.EstadoTramite == estado)
+                {
+                    Postulantes.Add(p);
+                }
+            }
+            MensajeEstado = $"Mostrando filtro: {estado} ({Postulantes.Count} resultados)";
+        }
+
         private async Task IrADetalleAsync(PostulanteApi postulanteSeleccionado)
         {
             if (postulanteSeleccionado == null) return;
-
-            var parametros = new Dictionary<string, object>
-            {
-                { "PostulanteElegido", postulanteSeleccionado }
-            };
-
+            var parametros = new Dictionary<string, object> { { "PostulanteElegido", postulanteSeleccionado } };
             await Shell.Current.GoToAsync("DetalleApiPage", parametros);
         }
     }

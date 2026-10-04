@@ -4,7 +4,7 @@ using Moviles2.ViewModels;
 using Moviles2.Views;
 using Moviles2.Repositories;
 using Moviles2.Interfaces;
-using System.Net.Http; // Necesario para la API
+using System.Net.Http;
 
 namespace Moviles2
 {

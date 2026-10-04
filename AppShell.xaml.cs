@@ -9,7 +9,6 @@ namespace Moviles2
         {
             InitializeComponent();
 
-            // Rutas secundarias que no son pestañas
             Routing.RegisterRoute("ResumenTramitePage", typeof(ResumenTramitePage));
             Routing.RegisterRoute("DetalleApiPage", typeof(DetalleApiPage));
         }

@@ -5,19 +5,24 @@
              Title="Base de Datos API"
              BackgroundColor="Black">
 
-    <Grid RowDefinitions="Auto, Auto, *">
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
 
         <Button Grid.Row="0" Text="Cargar Datos API" Command="{Binding CargarDatosCommand}" 
                 Margin="15" BackgroundColor="Blue" TextColor="White" FontAttributes="Bold" />
+        <HorizontalStackLayout Grid.Row="1" Spacing="10" HorizontalOptions="Center" Margin="0,0,0,10">
+            <Button Text="Todos" Command="{Binding MostrarTodosCommand}" BackgroundColor="#333" TextColor="White" FontSize="12" Padding="10,5"/>
+            <Button Text="Presentados" Command="{Binding FiltrarPresentadosCommand}" BackgroundColor="Green" TextColor="White" FontSize="12" Padding="10,5"/>
+            <Button Text="En Trámite" Command="{Binding FiltrarEnTramiteCommand}" BackgroundColor="#FFB347" TextColor="Black" FontSize="12" Padding="10,5"/>
+        </HorizontalStackLayout>
 
-        <Label Grid.Row="1" Text="{Binding MensajeEstado}" TextColor="#FFB347" 
+        <Label Grid.Row="2" Text="{Binding MensajeEstado}" TextColor="#FFB347" 
                FontAttributes="Italic" HorizontalOptions="Center" Margin="10,0,10,10" 
                HorizontalTextAlignment="Center" />
 
-        <ActivityIndicator Grid.Row="2" IsRunning="{Binding EstaCargando}" Color="White" 
+        <ActivityIndicator Grid.Row="3" IsRunning="{Binding EstaCargando}" Color="White" 
                            HorizontalOptions="Center" VerticalOptions="Center" ZIndex="1" />
 
-        <CollectionView Grid.Row="2" ItemsSource="{Binding Postulantes}" SelectionMode="Single"
+        <CollectionView Grid.Row="3" ItemsSource="{Binding Postulantes}" SelectionMode="Single"
                         SelectionChangedCommand="{Binding SeleccionarPostulanteCommand}"
                         SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
             <CollectionView.ItemTemplate>
@@ -26,6 +31,7 @@
                         <VerticalStackLayout>
                             <Label Text="{Binding Name}" TextColor="White" FontSize="18" FontAttributes="Bold" />
                             <Label Text="{Binding Email}" TextColor="LightGray" FontSize="14" />
+                            <Label Text="{Binding EstadoTramite}" TextColor="#FFB347" FontSize="13" FontAttributes="Bold" Margin="0,5,0,0"/>
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>

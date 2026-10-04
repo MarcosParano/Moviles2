@@ -5,7 +5,6 @@ using Moviles2.Models;
 
 namespace Moviles2.ViewModels
 {
-    // Usamos IQueryAttributable, que es 100% seguro para recibir parámetros
     public class ResumenTramiteViewModel : BindableObject, IQueryAttributable
     {
         private TramiteVigilador? _tramiteRecibido;
