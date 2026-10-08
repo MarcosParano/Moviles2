@@ -53,6 +53,7 @@ namespace Moviles2.ViewModels
 
         private async Task ObtenerPostulantesAsync()
         {
+            // Mantenemos la validación básica inicial
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 MensajeEstado = "Error: Sin conexión a Internet.";
@@ -68,9 +69,16 @@ namespace Moviles2.ViewModels
             {
                 var response = await _httpClient.GetAsync("https://jsonplaceholder.typicode.com/users");
 
+                // Corrección del profesor: Diferenciar códigos HTTP específicos
                 if (!response.IsSuccessStatusCode)
                 {
-                    MensajeEstado = $"Error HTTP: {response.StatusCode}";
+                    MensajeEstado = response.StatusCode switch
+                    {
+                        System.Net.HttpStatusCode.NotFound => "Error 404: Recurso no encontrado.",
+                        System.Net.HttpStatusCode.InternalServerError => "Error 500: Fallo del servidor.",
+                        System.Net.HttpStatusCode.ServiceUnavailable => "Error 503: Servidor en mantenimiento.",
+                        _ => $"Error HTTP {(int)response.StatusCode}"
+                    };
                     return;
                 }
 
@@ -84,18 +92,29 @@ namespace Moviles2.ViewModels
                     foreach (var item in lista)
                     {
                         item.EstadoTramite = rnd.Next(2) == 0 ? "Presentado" : "En Trámite";
-
                         _todosLosPostulantes.Add(item);
-                        Postulantes.Add(item);          
+                        Postulantes.Add(item);
                     }
 
                     MensajeEstado = $"Éxito: {lista.Count} postulantes cargados.";
                 }
             }
+            // Corrección del profesor: Manejo de excepciones granulares
+            catch (TaskCanceledException)
+            {
+                MensajeEstado = "Timeout: El servidor tardó demasiado en responder.";
+            }
+            catch (HttpRequestException ex)
+            {
+                MensajeEstado = $"Error de red: {ex.Message}";
+            }
+            catch (JsonException)
+            {
+                MensajeEstado = "Error de formato en los datos recibidos.";
+            }
             catch (Exception ex)
             {
-                MensajeEstado = "Error al obtener datos.";
-                Console.WriteLine(ex.Message);
+                MensajeEstado = $"Error inesperado: {ex.Message}";
             }
             finally
             {
