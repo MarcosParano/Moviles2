@@ -7,9 +7,9 @@ namespace Moviles2.ViewModels
 {
     public class DetalleApiViewModel : BindableObject, IQueryAttributable
     {
-        private PostulanteApi? _postulante;
+        private TramiteVigilador? _postulante;
 
-        public PostulanteApi? Postulante
+        public TramiteVigilador? Postulante
         {
             get => _postulante;
             set { _postulante = value; OnPropertyChanged(); }
@@ -26,7 +26,7 @@ namespace Moviles2.ViewModels
         {
             if (query.ContainsKey("PostulanteElegido"))
             {
-                Postulante = query["PostulanteElegido"] as PostulanteApi;
+                Postulante = query["PostulanteElegido"] as TramiteVigilador;
             }
         }
     }

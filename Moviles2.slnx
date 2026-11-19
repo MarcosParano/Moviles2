@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="Moviles2.csproj" />
+  <Project Path="Moviles2.Tests/Moviles2.Tests.csproj" Id="0b09f358-f1d2-4653-99f0-17cad50b2186" />
 </Solution>

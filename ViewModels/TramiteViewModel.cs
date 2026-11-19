@@ -4,179 +4,113 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using Moviles2.Models;
-using Moviles2.Repositories;
-using Moviles2.Interfaces;
+using Moviles2.Services;
 
 namespace Moviles2.ViewModels
 {
     public class TramiteViewModel : BindableObject
     {
-        private readonly ITramiteRepository _repository;
-        private TramiteVigilador? _tramite;
+        private readonly TramiteService _tramiteService;
+        private TramiteVigilador _tramite = new();
+        private string _mensajeEstado = "Completá los datos y requisitos del postulante.";
 
-        public TramiteViewModel(ITramiteRepository repository)
+        public TramiteVigilador Tramite
         {
-            _repository = repository;
-
-            LoadCommand = new Command(async () => await CargarTramiteAsync());
-            GuardarCommand = new Command(async () => await GuardarAsync());
-            PresentarCommand = new Command(Presentar, () => _tramite?.RequisitosCompletos() == true && _tramite?.EstaPresentado == false);
-            NuevoTramiteCommand = new Command(async () => await ReiniciarTramiteAsync());
-
-            LoadCommand.Execute(null);
+            get => _tramite;
+            set { _tramite = value; OnPropertyChanged(); }
         }
 
-        public string NombreSolicitante
+        public string MensajeEstado
         {
-            get => _tramite?.NombreSolicitante ?? string.Empty;
-            set { if (_tramite != null) { _tramite.NombreSolicitante = value ?? string.Empty; OnPropertyChanged(nameof(NombreSolicitante)); } }
+            get => _mensajeEstado;
+            set { _mensajeEstado = value; OnPropertyChanged(); }
         }
 
-        public bool TieneDNI
+        public ICommand GuardarTramiteCommand { get; }
+        public ICommand PresentarTramiteCommand { get; }
+        public ICommand VerResumenCommand { get; }
+        public ICommand MostrarPostulantesCommand { get; }
+
+        public TramiteViewModel(TramiteService tramiteService)
         {
-            get => _tramite?.TieneDNI ?? false;
-            set { if (_tramite != null) { _tramite.TieneDNI = value; NotificarCambios(nameof(TieneDNI)); } }
+            _tramiteService = tramiteService;
+
+            GuardarTramiteCommand = new Command(async () => await GuardarTramiteAsync());
+            PresentarTramiteCommand = new Command(async () => await PresentarTramiteAsync());
+            VerResumenCommand = new Command(async () => await IrAResumenAsync());
+            MostrarPostulantesCommand = new Command(async () =>
+                await Shell.Current.GoToAsync("///ListaPostulantesPage"));
+
+            _ = CargarTramiteLocalAsync();
         }
 
-        public bool TieneBiometricos
+        private async Task CargarTramiteLocalAsync()
         {
-            get => _tramite?.TieneBiometricos ?? false;
-            set { if (_tramite != null) { _tramite.TieneBiometricos = value; NotificarCambios(nameof(TieneBiometricos)); } }
-        }
-
-        public DateTime FechaBiometricos
-        {
-            get => _tramite?.FechaBiometricos ?? DateTime.Today;
-            set { if (_tramite != null) { _tramite.FechaBiometricos = value; OnPropertyChanged(nameof(FechaBiometricos)); } }
-        }
-
-        public bool TieneSecundario
-        {
-            get => _tramite?.TieneSecundario ?? false;
-            set { if (_tramite != null) { _tramite.TieneSecundario = value; NotificarCambios(nameof(TieneSecundario)); } }
-        }
-
-        public bool TieneCurso
-        {
-            get => _tramite?.TieneCurso ?? false;
-            set { if (_tramite != null) { _tramite.TieneCurso = value; NotificarCambios(nameof(TieneCurso)); } }
-        }
-
-        public DateTime FechaCurso
-        {
-            get => _tramite?.FechaCurso ?? DateTime.Today;
-            set { if (_tramite != null) { _tramite.FechaCurso = value; OnPropertyChanged(nameof(FechaCurso)); } }
-        }
-
-        public bool TieneReincidencia
-        {
-            get => _tramite?.TieneReincidencia ?? false;
-            set { if (_tramite != null) { _tramite.TieneReincidencia = value; NotificarCambios(nameof(TieneReincidencia)); } }
-        }
-
-        public DateTime FechaReincidencia
-        {
-            get => _tramite?.FechaReincidencia ?? DateTime.Today;
-            set { if (_tramite != null) { _tramite.FechaReincidencia = value; OnPropertyChanged(nameof(FechaReincidencia)); } }
-        }
-
-        public string EstadoGeneral
-        {
-            get
+            try
             {
-                if (_tramite == null) return "Cargando...";
-                if (_tramite.EstaHabilitado) return $"Habilitado hasta: {_tramite.FechaVencimiento?.ToString("dd/MM/yyyy")}";
-
-                var faltantes = new List<string>();
-                if (!_tramite.TieneDNI) faltantes.Add("- DNI Vigente");
-                if (!_tramite.TieneBiometricos) faltantes.Add("- Datos Biométricos");
-                if (!_tramite.TieneSecundario) faltantes.Add("- Título Secundario");
-                if (!_tramite.TieneCurso) faltantes.Add("- Curso de Capacitación");
-                if (!_tramite.TieneReincidencia) faltantes.Add("- Certificado de Reincidencia");
-
-                if (faltantes.Count == 0) return "¡Todos los requisitos completos!\nListo para presentar.";
-
-                return "En proceso. Faltan los siguientes requisitos:\n" + string.Join("\n", faltantes);
-            }
-        }
-
-        public ICommand LoadCommand { get; }
-        public ICommand GuardarCommand { get; }
-        public ICommand PresentarCommand { get; }
-        public ICommand NuevoTramiteCommand { get; }
-
-        private void NotificarCambios(string nombrePropiedad)
-        {
-            OnPropertyChanged(nombrePropiedad);
-            OnPropertyChanged(nameof(EstadoGeneral));
-            ((Command)PresentarCommand).ChangeCanExecute();
-        }
-
-        private async Task CargarTramiteAsync()
-        {
-            _tramite = await _repository.ObtenerTramiteAsync();
-
-            OnPropertyChanged(nameof(NombreSolicitante));
-            OnPropertyChanged(nameof(TieneDNI));
-            OnPropertyChanged(nameof(TieneBiometricos));
-            OnPropertyChanged(nameof(FechaBiometricos));
-            OnPropertyChanged(nameof(TieneSecundario));
-            OnPropertyChanged(nameof(TieneCurso));
-            OnPropertyChanged(nameof(FechaCurso));
-            OnPropertyChanged(nameof(TieneReincidencia));
-            OnPropertyChanged(nameof(FechaReincidencia));
-            OnPropertyChanged(nameof(EstadoGeneral));
-            ((Command)PresentarCommand).ChangeCanExecute();
-        }
-
-        private async Task GuardarAsync()
-        {
-            if (_tramite != null)
-            {
-                await _repository.GuardarTramiteAsync(_tramite);
-                if (Shell.Current != null) await Shell.Current.DisplayAlertAsync("Guardado", "Avance registrado.", "OK");
-            }
-        }
-
-        private async void Presentar()
-        {
-            if (_tramite != null)
-            {
-                _tramite.EstaPresentado = true;
-                _tramite.AprobarHabilitacion();
-                OnPropertyChanged(nameof(EstadoGeneral));
-                ((Command)PresentarCommand).ChangeCanExecute();
-
-                await GuardarAsync();
-
-                var parametros = new Dictionary<string, object>
+                var guardado = await _tramiteService.ObtenerTramiteGuardadoAsync();
+                if (guardado != null)
                 {
-                    { "MiTramite", _tramite }
-                };
-                await Shell.Current.GoToAsync("ResumenTramitePage", parametros);
+                    Tramite = guardado;
+                    MensajeEstado = $"Cargado desde SQLite: {Tramite.EstadoGeneral}";
+                }
+            }
+            catch (Exception ex)
+            {
+                MensajeEstado = $"Error al leer SQLite: {ex.Message}";
             }
         }
 
-        private async Task ReiniciarTramiteAsync()
+        private async Task GuardarTramiteAsync()
         {
-            if (_tramite != null)
+            try
             {
-                _tramite.NombreSolicitante = string.Empty;
-                _tramite.TieneDNI = false;
-                _tramite.TieneBiometricos = false;
-                _tramite.TieneSecundario = false;
-                _tramite.TieneCurso = false;
-                _tramite.TieneReincidencia = false;
-                _tramite.FechaBiometricos = DateTime.Today;
-                _tramite.FechaCurso = DateTime.Today;
-                _tramite.FechaReincidencia = DateTime.Today;
-                _tramite.EstaPresentado = false;
-                _tramite.EstaHabilitado = false;
-                _tramite.FechaVencimiento = null;
-
-                await _repository.GuardarTramiteAsync(_tramite);
-                await CargarTramiteAsync();
+                await _tramiteService.GuardarProgresoAsync(Tramite);
+                OnPropertyChanged(nameof(Tramite));
+                MensajeEstado = $"Guardado localmente ({Tramite.EstadoGeneral}).";
+                await Shell.Current.DisplayAlertAsync("Guardado", "El progreso se guardó en la base local.", "OK");
             }
+            catch (ArgumentException ex)
+            {
+                MensajeEstado = ex.Message;
+                await Shell.Current.DisplayAlertAsync("Datos inválidos", ex.Message, "OK");
+            }
+            catch (Exception ex)
+            {
+                MensajeEstado = $"Error al guardar: {ex.Message}";
+            }
+        }
+
+        private async Task PresentarTramiteAsync()
+        {
+            try
+            {
+                bool presentado = await _tramiteService.PresentarTramiteAsync(Tramite);
+
+                if (!presentado)
+                {
+                    MensajeEstado = "Faltan requisitos obligatorios o el nombre es inválido.";
+                    await Shell.Current.DisplayAlertAsync("Incompleto", "Ingresá un nombre válido (mín. 3 letras) y marcá los 5 requisitos.", "OK");
+                    return;
+                }
+
+                OnPropertyChanged(nameof(Tramite));
+                MensajeEstado = $"¡Trámite presentado! ({Tramite.EstadoGeneral})";
+                await Shell.Current.DisplayAlertAsync("Trámite Presentado", $"Habilitación aprobada para {Tramite.NombreSolicitante}.", "OK");
+            }
+            catch (Exception ex)
+            {
+                MensajeEstado = $"Error al presentar: {ex.Message}";
+            }
+        }
+
+        private async Task IrAResumenAsync()
+        {
+            var parametros = new Dictionary<string, object>
+            {
+                { "TramiteActual", Tramite }
+            };
+            await Shell.Current.GoToAsync("ResumenTramitePage", parametros);
         }
     }
 }

@@ -5,10 +5,19 @@ namespace Moviles2.Views
 {
     public partial class ListaPostulantesPage : ContentPage
     {
+        private readonly ListaPostulantesViewModel _viewModel;
+
         public ListaPostulantesPage(ListaPostulantesViewModel viewModel)
         {
             InitializeComponent();
-            BindingContext = viewModel;
+            _viewModel = viewModel;
+            BindingContext = _viewModel;
+        }
+
+        protected override async void OnAppearing()
+        {
+            base.OnAppearing();
+            await _viewModel.CargarLocalesAsync();
         }
     }
 }

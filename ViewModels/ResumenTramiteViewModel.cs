@@ -7,22 +7,23 @@ namespace Moviles2.ViewModels
 {
     public class ResumenTramiteViewModel : BindableObject, IQueryAttributable
     {
-        private TramiteVigilador? _tramiteRecibido;
+        private TramiteVigilador _tramite = new();
 
-        public TramiteVigilador? TramiteRecibido
+        public TramiteVigilador Tramite
         {
-            get => _tramiteRecibido;
+            get => _tramite;
             set
             {
-                _tramiteRecibido = value;
-                OnPropertyChanged(nameof(TramiteRecibido));
-                OnPropertyChanged(nameof(NombrePostulante));
-                OnPropertyChanged(nameof(FechaVencimientoStr));
+                _tramite = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(TextoVencimiento));
             }
         }
 
-        public string NombrePostulante => TramiteRecibido?.NombreSolicitante ?? "Buscando datos...";
-        public string FechaVencimientoStr => TramiteRecibido?.FechaVencimiento?.ToString("dd/MM/yyyy") ?? "Calculando...";
+        public string TextoVencimiento =>
+            Tramite.FechaVencimiento.HasValue
+                ? Tramite.FechaVencimiento.Value.ToString("dd/MM/yyyy")
+                : "Pendiente de aprobación";
 
         public ICommand VolverCommand { get; }
 
@@ -33,9 +34,9 @@ namespace Moviles2.ViewModels
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
         {
-            if (query.ContainsKey("MiTramite"))
+            if (query.ContainsKey("TramiteActual") && query["TramiteActual"] is TramiteVigilador recibido)
             {
-                TramiteRecibido = query["MiTramite"] as TramiteVigilador;
+                Tramite = recibido;
             }
         }
     }

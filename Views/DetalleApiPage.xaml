@@ -5,30 +5,65 @@
              Title="Ficha Técnica API"
              BackgroundColor="Black">
 
-    <VerticalStackLayout Padding="20" Spacing="20">
-        <Label Text="Detalle del Postulante" FontSize="24" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center"/>
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+            <Label Text="Detalle del Postulante" FontSize="24" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center"/>
 
-        <Border BackgroundColor="#1E1E1E" Stroke="Gray" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="20">
-            <VerticalStackLayout Spacing="10">
-                <Label Text="ID de Registro:" TextColor="LightGray" FontSize="12"/>
-                <Label Text="{Binding Postulante.Id}" TextColor="White" FontSize="16" FontAttributes="Bold"/>
+            <Border BackgroundColor="#1E1E1E" Stroke="Gray" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="18">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="NOMBRE COMPLETO" TextColor="LightGray" FontSize="11" FontAttributes="Bold"/>
+                    <Label Text="{Binding Postulante.NombreSolicitante}" TextColor="White" FontSize="20" FontAttributes="Bold"/>
 
-                <Label Text="Nombre Completo:" TextColor="LightGray" FontSize="12" Margin="0,10,0,0"/>
-                <Label Text="{Binding Postulante.Name}" TextColor="White" FontSize="20" FontAttributes="Bold"/>
+                    <Label Text="SITUACIÓN DEL TRÁMITE" TextColor="LightGray" FontSize="11" FontAttributes="Bold" Margin="0,10,0,0"/>
+                    <Label Text="{Binding Postulante.EstadoGeneral}" TextColor="#FFB347" FontSize="15" FontAttributes="Bold"/>
+                </VerticalStackLayout>
+            </Border>
 
-                <Label Text="Correo Electrónico:" TextColor="LightGray" FontSize="12" Margin="0,10,0,0"/>
-                <Label Text="{Binding Postulante.Email}" TextColor="#FFB347" FontSize="16"/>
+            <Label Text="Checklist de Documentación" FontSize="18" TextColor="White" FontAttributes="Bold" Margin="4,8,0,0"/>
 
-                <Label Text="Teléfono de Contacto:" TextColor="LightGray" FontSize="12" Margin="0,10,0,0"/>
-                <Label Text="{Binding Postulante.Phone}" TextColor="White" FontSize="16"/>
+            <VerticalStackLayout Spacing="8">
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Postulante.TieneDNI}" InputTransparent="True" Color="#4CAF50" Scale="1.2"/>
+                        <Label Text="DNI Vigente" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Postulante.TieneBiometricos}" InputTransparent="True" Color="#4CAF50" Scale="1.2"/>
+                        <Label Text="Datos Biométricos" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Postulante.TieneSecundario}" InputTransparent="True" Color="#4CAF50" Scale="1.2"/>
+                        <Label Text="Título Secundario" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Postulante.TieneCurso}" InputTransparent="True" Color="#4CAF50" Scale="1.2"/>
+                        <Label Text="Curso de Capacitación" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
+
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Postulante.TieneReincidencia}" InputTransparent="True" Color="#4CAF50" Scale="1.2"/>
+                        <Label Text="Certificado de Reincidencia" TextColor="White" FontSize="16" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </Border>
             </VerticalStackLayout>
-        </Border>
 
-        <Button Text="Volver a la Lista" 
-                Command="{Binding VolverCommand}" 
-                BackgroundColor="#333333" 
-                TextColor="White"
-                FontAttributes="Bold"
-                Margin="0,20,0,0" />
-    </VerticalStackLayout>
+            <Button Text="Volver a la Lista" 
+                    Command="{Binding VolverCommand}" 
+                    BackgroundColor="#333333" 
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    Margin="0,10,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

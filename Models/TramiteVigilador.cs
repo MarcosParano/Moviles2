@@ -1,21 +1,26 @@
 ﻿using System;
+using SQLite;
 
 namespace Moviles2.Models
 {
     public class TramiteVigilador
     {
-        [SQLite.PrimaryKey, SQLite.AutoIncrement]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
+
         public string NombreSolicitante { get; set; } = string.Empty;
 
         public bool TieneDNI { get; set; }
-        public bool TieneBiometricos { get; set; }
-        public bool TieneSecundario { get; set; }
-        public bool TieneCurso { get; set; }
-        public bool TieneReincidencia { get; set; }
 
+        public bool TieneBiometricos { get; set; }
         public DateTime FechaBiometricos { get; set; } = DateTime.Today;
+
+        public bool TieneSecundario { get; set; }
+
+        public bool TieneCurso { get; set; }
         public DateTime FechaCurso { get; set; } = DateTime.Today;
+
+        public bool TieneReincidencia { get; set; }
         public DateTime FechaReincidencia { get; set; } = DateTime.Today;
 
         public bool EstaPresentado { get; set; }
@@ -24,13 +29,34 @@ namespace Moviles2.Models
 
         public bool RequisitosCompletos()
         {
-            return TieneDNI && TieneBiometricos && TieneSecundario && TieneCurso && TieneReincidencia;
+            return TieneDNI &&
+                   TieneBiometricos &&
+                   TieneSecundario &&
+                   TieneCurso &&
+                   TieneReincidencia;
         }
 
         public void AprobarHabilitacion()
         {
-            EstaHabilitado = true;
-            FechaVencimiento = DateTime.Now.AddYears(1);
+            if (RequisitosCompletos() && EstaPresentado)
+            {
+                EstaHabilitado = true;
+                FechaVencimiento = DateTime.Now.AddYears(1);
+            }
+        }
+
+        [Ignore]
+        public string EstadoGeneral
+        {
+            get
+            {
+                if (EstaHabilitado)
+                    return "Presentado - Habilitado";
+                if (EstaPresentado)
+                    return "Presentado - En revisión";
+
+                return "En Trámite - Faltan requisitos";
+            }
         }
     }
 }

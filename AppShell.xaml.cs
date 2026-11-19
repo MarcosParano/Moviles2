@@ -8,7 +8,6 @@ namespace Moviles2
         public AppShell()
         {
             InitializeComponent();
-
             Routing.RegisterRoute("ResumenTramitePage", typeof(ResumenTramitePage));
             Routing.RegisterRoute("DetalleApiPage", typeof(DetalleApiPage));
         }

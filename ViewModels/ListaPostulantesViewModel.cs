@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Net.Http;
 using System.Text.Json;
@@ -6,20 +7,20 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Networking;
+using Moviles2.Interfaces;
 using Moviles2.Models;
-using System.Collections.Generic;
 
 namespace Moviles2.ViewModels
 {
     public class ListaPostulantesViewModel : BindableObject
     {
         private readonly HttpClient _httpClient;
-        private string _mensajeEstado = "Presiona 'Cargar Datos API'.";
+        private readonly ITramiteRepository _tramiteRepository;
+        private string _mensajeEstado = "Cargando datos locales...";
         private bool _estaCargando;
 
-        private List<PostulanteApi> _todosLosPostulantes = new();
-
-        public ObservableCollection<PostulanteApi> Postulantes { get; } = new();
+        private List<TramiteVigilador> _todosLosPostulantes = new();
+        public ObservableCollection<TramiteVigilador> Postulantes { get; } = new();
 
         public string MensajeEstado
         {
@@ -35,41 +36,71 @@ namespace Moviles2.ViewModels
 
         public ICommand CargarDatosCommand { get; }
         public ICommand SeleccionarPostulanteCommand { get; }
-
         public ICommand FiltrarPresentadosCommand { get; }
         public ICommand FiltrarEnTramiteCommand { get; }
         public ICommand MostrarTodosCommand { get; }
 
-        public ListaPostulantesViewModel(HttpClient httpClient)
+        public ListaPostulantesViewModel(HttpClient httpClient, ITramiteRepository tramiteRepository)
         {
             _httpClient = httpClient;
+            _tramiteRepository = tramiteRepository;
+
             CargarDatosCommand = new Command(async () => await ObtenerPostulantesAsync());
-            SeleccionarPostulanteCommand = new Command<PostulanteApi>(async (p) => await IrADetalleAsync(p));
+            SeleccionarPostulanteCommand = new Command<TramiteVigilador>(async (p) => await IrADetalleAsync(p));
 
             FiltrarPresentadosCommand = new Command(() => AplicarFiltro("Presentado"));
             FiltrarEnTramiteCommand = new Command(() => AplicarFiltro("En Trámite"));
             MostrarTodosCommand = new Command(() => AplicarFiltro("Todos"));
         }
 
-        private async Task ObtenerPostulantesAsync()
+        // Se ejecuta automáticamente al entrar a la pantalla
+        public async Task CargarLocalesAsync()
         {
-            // Mantenemos la validación básica inicial
-            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
-            {
-                MensajeEstado = "Error: Sin conexión a Internet.";
-                return;
-            }
-
-            EstaCargando = true;
-            MensajeEstado = "Descargando datos...";
             Postulantes.Clear();
             _todosLosPostulantes.Clear();
 
             try
             {
+                var tramiteLocal = await _tramiteRepository.ObtenerTramiteAsync();
+
+                if (tramiteLocal != null && !string.IsNullOrWhiteSpace(tramiteLocal.NombreSolicitante))
+                {
+                    _todosLosPostulantes.Add(tramiteLocal);
+                    Postulantes.Add(tramiteLocal);
+                    MensajeEstado = "Mostrando trámite local. Presioná 'Cargar Datos API' para sumar los de internet.";
+                }
+                else
+                {
+                    MensajeEstado = "No hay trámites locales guardados. Presioná 'Cargar Datos API'.";
+                }
+            }
+            catch (Exception ex)
+            {
+                MensajeEstado = $"Error al leer SQLite: {ex.Message}";
+            }
+        }
+
+        // Se ejecuta al tocar el botón "Cargar Datos API"
+        private async Task ObtenerPostulantesAsync()
+        {
+            EstaCargando = true;
+
+            // Recargamos locales primero para evitar duplicados si apretás el botón dos veces
+            await CargarLocalesAsync();
+
+            if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
+            {
+                MensajeEstado = "Sin conexión a Internet. Mostrando solo datos locales.";
+                EstaCargando = false;
+                return;
+            }
+
+            MensajeEstado = "Acoplando datos desde la API...";
+
+            try
+            {
                 var response = await _httpClient.GetAsync("https://jsonplaceholder.typicode.com/users");
 
-                // Corrección del profesor: Diferenciar códigos HTTP específicos
                 if (!response.IsSuccessStatusCode)
                 {
                     MensajeEstado = response.StatusCode switch
@@ -84,22 +115,36 @@ namespace Moviles2.ViewModels
 
                 var json = await response.Content.ReadAsStringAsync();
                 var opciones = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var lista = JsonSerializer.Deserialize<List<PostulanteApi>>(json, opciones);
+                var listaApi = JsonSerializer.Deserialize<List<PostulanteApi>>(json, opciones);
 
-                if (lista != null)
+                if (listaApi != null)
                 {
                     var rnd = new Random();
-                    foreach (var item in lista)
+                    foreach (var item in listaApi)
                     {
-                        item.EstadoTramite = rnd.Next(2) == 0 ? "Presentado" : "En Trámite";
-                        _todosLosPostulantes.Add(item);
-                        Postulantes.Add(item);
+                        var tramite = new TramiteVigilador
+                        {
+                            NombreSolicitante = item.Name,
+                            TieneDNI = true,
+                            TieneBiometricos = rnd.Next(2) == 0,
+                            TieneSecundario = rnd.Next(2) == 0,
+                            TieneCurso = rnd.Next(2) == 0,
+                            TieneReincidencia = rnd.Next(2) == 0
+                        };
+
+                        if (tramite.RequisitosCompletos())
+                        {
+                            tramite.EstaPresentado = true;
+                            tramite.AprobarHabilitacion();
+                        }
+
+                        _todosLosPostulantes.Add(tramite);
+                        Postulantes.Add(tramite);
                     }
 
-                    MensajeEstado = $"Éxito: {lista.Count} postulantes cargados.";
+                    MensajeEstado = $"Éxito: {_todosLosPostulantes.Count} trámites totales (Local + API).";
                 }
             }
-            // Corrección del profesor: Manejo de excepciones granulares
             catch (TaskCanceledException)
             {
                 MensajeEstado = "Timeout: El servidor tardó demasiado en responder.";
@@ -127,7 +172,11 @@ namespace Moviles2.ViewModels
             Postulantes.Clear();
             foreach (var p in _todosLosPostulantes)
             {
-                if (estado == "Todos" || p.EstadoTramite == estado)
+                bool coincide = estado == "Todos" ||
+                                (estado == "Presentado" && p.EstaPresentado) ||
+                                (estado == "En Trámite" && !p.EstaPresentado);
+
+                if (coincide)
                 {
                     Postulantes.Add(p);
                 }
@@ -135,7 +184,7 @@ namespace Moviles2.ViewModels
             MensajeEstado = $"Mostrando filtro: {estado} ({Postulantes.Count} resultados)";
         }
 
-        private async Task IrADetalleAsync(PostulanteApi postulanteSeleccionado)
+        private async Task IrADetalleAsync(TramiteVigilador postulanteSeleccionado)
         {
             if (postulanteSeleccionado == null) return;
             var parametros = new Dictionary<string, object> { { "PostulanteElegido", postulanteSeleccionado } };

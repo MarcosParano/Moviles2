@@ -2,89 +2,113 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Moviles2.Views.MainPage"
-             Title="Trámite Vigilador CABA"
+             Title="Trámite Vigilador"
              BackgroundColor="Black">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Padding="20" Spacing="14">
 
-            <Label Text="Habilitación de Vigilador" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" TextColor="White" />
+            <Label Text="Carga de Trámite Local" FontSize="24" TextColor="White" FontAttributes="Bold" HorizontalOptions="Center" />
 
-            <Entry Placeholder="Nombre del Solicitante" Text="{Binding NombreSolicitante}" BackgroundColor="#1E1E1E" TextColor="White" PlaceholderColor="LightGray" />
-
-            <Label Text="Requisitos a presentar:" FontSize="18" FontAttributes="Bold" Margin="0,10,0,0" TextColor="White" />
-
-            <!-- DNI -->
-            <HorizontalStackLayout Spacing="10">
-                <CheckBox IsChecked="{Binding TieneDNI}" Color="White" />
-                <Label Text="DNI" VerticalOptions="Center" TextColor="White" />
-            </HorizontalStackLayout>
-
-            <!-- Biométricos con Fecha -->
-            <VerticalStackLayout Spacing="5">
-                <HorizontalStackLayout Spacing="10">
-                    <CheckBox IsChecked="{Binding TieneBiometricos}" Color="White" />
-                    <Label Text="Datos Biométricos" VerticalOptions="Center" TextColor="White" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout IsVisible="{Binding TieneBiometricos}" Spacing="10" Margin="50,0,0,0">
-                    <Label Text="Realizado el:" VerticalOptions="Center" TextColor="LightGray"/>
-                    <DatePicker Date="{Binding FechaBiometricos}" BackgroundColor="#1E1E1E" TextColor="White" />
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-
-            <!-- Secundario -->
-            <HorizontalStackLayout Spacing="10">
-                <CheckBox IsChecked="{Binding TieneSecundario}" Color="White" />
-                <Label Text="Título Secundario" VerticalOptions="Center" TextColor="White" />
-            </HorizontalStackLayout>
-
-            <!-- Curso de Capacitación con Fecha -->
-            <VerticalStackLayout Spacing="5">
-                <HorizontalStackLayout Spacing="10">
-                    <CheckBox IsChecked="{Binding TieneCurso}" Color="White" />
-                    <Label Text="Curso de Capacitación" VerticalOptions="Center" TextColor="White" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout IsVisible="{Binding TieneCurso}" Spacing="10" Margin="50,0,0,0">
-                    <Label Text="Aprobado el:" VerticalOptions="Center" TextColor="LightGray"/>
-                    <DatePicker Date="{Binding FechaCurso}" BackgroundColor="#1E1E1E" TextColor="White"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-
-            <!-- Reincidencia con Fecha -->
-            <VerticalStackLayout Spacing="5">
-                <HorizontalStackLayout Spacing="10">
-                    <CheckBox IsChecked="{Binding TieneReincidencia}" Color="White" />
-                    <Label Text="Certificado de Reincidencia" VerticalOptions="Center" TextColor="White" />
-                </HorizontalStackLayout>
-                <HorizontalStackLayout IsVisible="{Binding TieneReincidencia}" Spacing="10" Margin="50,0,0,0">
-                    <Label Text="Emitido el:" VerticalOptions="Center" TextColor="LightGray"/>
-                    <DatePicker Date="{Binding FechaReincidencia}" BackgroundColor="#1E1E1E" TextColor="White"/>
-                </HorizontalStackLayout>
-            </VerticalStackLayout>
-
-            <!-- Cuadro Dinámico de Faltantes -->
-            <Border Stroke="Gray" StrokeThickness="2" BackgroundColor="#121212" StrokeShape="RoundRectangle 8" Padding="15" Margin="0,15,0,0">
-                <Label Text="{Binding EstadoGeneral}" FontSize="15" FontAttributes="Bold" TextColor="#FFB347" />
+            <!-- Estado actual siempre visible -->
+            <Border BackgroundColor="#1E1E1E" Stroke="#FFB347" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="12">
+                <Label Text="{Binding Tramite.EstadoGeneral}" TextColor="#FFB347" FontSize="15" FontAttributes="Bold" HorizontalTextAlignment="Center" />
             </Border>
 
-            <!-- Botón de Guardar -->
-            <Button Text="Guardar Avance" 
-                    Command="{Binding GuardarCommand}" 
-                    BackgroundColor="Blue" 
+            <!-- Nombre -->
+            <Border BackgroundColor="#1E1E1E" Stroke="Gray" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="15">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Nombre del Solicitante:" TextColor="LightGray" FontSize="13" />
+                    <Entry Text="{Binding Tramite.NombreSolicitante}" Placeholder="Ej: Juan Pérez" TextColor="White" PlaceholderColor="Gray" />
+                </VerticalStackLayout>
+            </Border>
+
+            <Label Text="Requisitos de Habilitación" FontSize="18" TextColor="White" FontAttributes="Bold" Margin="4,4,0,0" />
+
+            <VerticalStackLayout Spacing="8">
+                <!-- DNI -->
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Tramite.TieneDNI}" Color="#4CAF50" Scale="1.2" />
+                        <Label Text="DNI Vigente" TextColor="White" FontSize="16" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Biométricos + Fecha -->
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,8">
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="12">
+                            <CheckBox x:Name="ChkBiometricos" IsChecked="{Binding Tramite.TieneBiometricos}" Color="#4CAF50" Scale="1.2" />
+                            <Label Text="Datos Biométricos" TextColor="White" FontSize="16" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsChecked, Source={x:Reference ChkBiometricos}}" Margin="38,0,0,0">
+                            <Label Text="Fecha:" TextColor="LightGray" VerticalOptions="Center" FontSize="14" />
+                            <DatePicker Date="{Binding Tramite.FechaBiometricos}" TextColor="#FFB347" Format="dd/MM/yyyy" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Secundario -->
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,8">
+                    <HorizontalStackLayout Spacing="12">
+                        <CheckBox IsChecked="{Binding Tramite.TieneSecundario}" Color="#4CAF50" Scale="1.2" />
+                        <Label Text="Título Secundario" TextColor="White" FontSize="16" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                </Border>
+
+                <!-- Curso + Fecha -->
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,8">
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="12">
+                            <CheckBox x:Name="ChkCurso" IsChecked="{Binding Tramite.TieneCurso}" Color="#4CAF50" Scale="1.2" />
+                            <Label Text="Curso de Capacitación" TextColor="White" FontSize="16" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsChecked, Source={x:Reference ChkCurso}}" Margin="38,0,0,0">
+                            <Label Text="Fecha:" TextColor="LightGray" VerticalOptions="Center" FontSize="14" />
+                            <DatePicker Date="{Binding Tramite.FechaCurso}" TextColor="#FFB347" Format="dd/MM/yyyy" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Reincidencia + Fecha -->
+                <Border BackgroundColor="#2A2A2A" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,8">
+                    <VerticalStackLayout Spacing="6">
+                        <HorizontalStackLayout Spacing="12">
+                            <CheckBox x:Name="ChkReincidencia" IsChecked="{Binding Tramite.TieneReincidencia}" Color="#4CAF50" Scale="1.2" />
+                            <Label Text="Certificado de Reincidencia" TextColor="White" FontSize="16" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <HorizontalStackLayout Spacing="10" IsVisible="{Binding IsChecked, Source={x:Reference ChkReincidencia}}" Margin="38,0,0,0">
+                            <Label Text="Fecha:" TextColor="LightGray" VerticalOptions="Center" FontSize="14" />
+                            <DatePicker Date="{Binding Tramite.FechaReincidencia}" TextColor="#FFB347" Format="dd/MM/yyyy" />
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <Label Text="{Binding MensajeEstado}" TextColor="#FFB347" FontAttributes="Italic" HorizontalTextAlignment="Center" Margin="0,4" />
+
+            <!-- Botones de acción -->
+            <Button Text="Guardar Progreso"
+                    Command="{Binding GuardarTramiteCommand}"
+                    BackgroundColor="#4CAF50"
                     TextColor="White"
                     FontAttributes="Bold" />
 
-            <!-- Botón de Presentar -->
-            <Button Text="Presentar Trámite" 
-                    Command="{Binding PresentarCommand}" 
-                    BackgroundColor="Green" 
+            <Button Text="Presentar Trámite"
+                    Command="{Binding PresentarTramiteCommand}"
+                    BackgroundColor="#FF9800"
+                    TextColor="Black"
+                    FontAttributes="Bold" />
+
+            <Button Text="Ver Resumen"
+                    Command="{Binding VerResumenCommand}"
+                    BackgroundColor="#333333"
                     TextColor="White"
                     FontAttributes="Bold" />
 
-            <!-- Botón para limpiar los datos -->
-            <Button Text="Limpiar / Nuevo Trámite" 
-                    Command="{Binding NuevoTramiteCommand}" 
-                    BackgroundColor="DarkRed" 
+            <Button Text="Mostrar Postulantes"
+                    Command="{Binding MostrarPostulantesCommand}"
+                    BackgroundColor="#1E88E5"
                     TextColor="White"
                     FontAttributes="Bold" />
 

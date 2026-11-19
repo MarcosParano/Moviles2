@@ -9,6 +9,7 @@
 
         <Button Grid.Row="0" Text="Cargar Datos API" Command="{Binding CargarDatosCommand}" 
                 Margin="15" BackgroundColor="Blue" TextColor="White" FontAttributes="Bold" />
+
         <HorizontalStackLayout Grid.Row="1" Spacing="10" HorizontalOptions="Center" Margin="0,0,0,10">
             <Button Text="Todos" Command="{Binding MostrarTodosCommand}" BackgroundColor="#333" TextColor="White" FontSize="12" Padding="10,5"/>
             <Button Text="Presentados" Command="{Binding FiltrarPresentadosCommand}" BackgroundColor="Green" TextColor="White" FontSize="12" Padding="10,5"/>
@@ -28,10 +29,9 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Border Stroke="Gray" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="15" Margin="10,5" BackgroundColor="#1E1E1E">
-                        <VerticalStackLayout>
-                            <Label Text="{Binding Name}" TextColor="White" FontSize="18" FontAttributes="Bold" />
-                            <Label Text="{Binding Email}" TextColor="LightGray" FontSize="14" />
-                            <Label Text="{Binding EstadoTramite}" TextColor="#FFB347" FontSize="13" FontAttributes="Bold" Margin="0,5,0,0"/>
+                        <VerticalStackLayout Spacing="4">
+                            <Label Text="{Binding NombreSolicitante}" TextColor="White" FontSize="18" FontAttributes="Bold" />
+                            <Label Text="{Binding EstadoGeneral}" TextColor="#FFB347" FontSize="13" />
                         </VerticalStackLayout>
                     </Border>
                 </DataTemplate>
