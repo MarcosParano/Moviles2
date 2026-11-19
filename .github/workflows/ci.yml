@@ -28,6 +28,15 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      # Restaurar workloads de MAUI requeridos por Moviles2.csproj
+      - name: Restaurar workloads de MAUI (Linux)
+        if: runner.os == 'Linux'
+        run: sudo dotnet workload restore Moviles2.csproj
+
+      - name: Restaurar workloads de MAUI (Windows)
+        if: runner.os == 'Windows'
+        run: dotnet workload restore Moviles2.csproj
+
       # Caching de paquetes NuGet para acelerar ejecuciones futuras
       - name: Cache de paquetes NuGet
         uses: actions/cache@v4
