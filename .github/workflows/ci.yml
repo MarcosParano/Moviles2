@@ -1,0 +1,57 @@
+name: CI - Trámite Vigilador (.NET 10)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build & Test (${{ matrix.os }} - ${{ matrix.configuration }})
+    runs-on: ${{ matrix.os }}
+
+    # Matriz: ejecuta el pipeline en Linux y Windows
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        configuration: [Release]
+
+    steps:
+      - name: Descargar código fuente
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET 10 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      # Caching de paquetes NuGet para acelerar ejecuciones futuras
+      - name: Cache de paquetes NuGet
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restaurar dependencias
+        run: dotnet restore Moviles2.Tests/Moviles2.Tests.csproj
+
+      - name: Compilar proyecto y tests
+        run: dotnet build Moviles2.Tests/Moviles2.Tests.csproj --configuration ${{ matrix.configuration }} --no-restore
+
+      - name: Ejecutar pruebas unitarias y de integración
+        run: dotnet test Moviles2.Tests/Moviles2.Tests.csproj --configuration ${{ matrix.configuration }} --no-build --verbosity normal --logger "trx;LogFileName=test-results-${{ matrix.os }}.trx"
+
+      # Generación y subida de artefactos (binarios compilados + resultados de tests)
+      - name: Subir artefactos de compilación y resultados
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: build-and-tests-${{ matrix.os }}
+          path: |
+            Moviles2.Tests/bin/${{ matrix.configuration }}/net10.0/
+            Moviles2.Tests/TestResults/*.trx
