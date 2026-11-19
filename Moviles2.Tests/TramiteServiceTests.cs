@@ -19,9 +19,9 @@ namespace Moviles2.Tests
             return Task.CompletedTask;
         }
 
-        public Task<TramiteVigilador?> ObtenerTramiteAsync()
+        public Task<TramiteVigilador> ObtenerTramiteAsync()
         {
-            return Task.FromResult(_guardado);
+            return Task.FromResult(_guardado!);
         }
     }
 

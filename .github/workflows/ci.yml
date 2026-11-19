@@ -28,6 +28,10 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Restaurar workloads de MAUI (Linux)
+        if: runner.os == 'Linux'
+        run: sudo dotnet workload restore Moviles2.csproj
+
       # Restaurar workloads de MAUI requeridos por Moviles2.csproj
       - name: Restaurar workloads de MAUI (Linux)
         if: runner.os == 'Linux'
