@@ -19,7 +19,7 @@ namespace Moviles2.Services
             return await _repository.ObtenerTramiteAsync();
         }
 
-        public async Task GuardarProgresoAsync(TramiteVigilador tramite)
+        public async Task<bool> GuardarProgresoAsync(TramiteVigilador tramite)
         {
             if (tramite == null)
                 throw new ArgumentNullException(nameof(tramite));
@@ -39,6 +39,7 @@ namespace Moviles2.Services
             }
 
             await _repository.GuardarTramiteAsync(tramite);
+            return true;
         }
 
         public async Task<bool> PresentarTramiteAsync(TramiteVigilador tramite)
