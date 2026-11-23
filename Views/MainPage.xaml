@@ -85,6 +85,28 @@
                 </Border>
             </VerticalStackLayout>
 
+            <!-- Sección de Cámara: Foto DNI / Perfil -->
+            <Border BackgroundColor="#1E1E1E" Stroke="#444444" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="14">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Foto del DNI / Perfil del Vigilador"
+                           TextColor="White"
+                           FontSize="16"
+                           FontAttributes="Bold" />
+
+                    <Border BackgroundColor="#121212" Stroke="#333333" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="4">
+                        <Image Source="{Binding RutaFotoDni}"
+                               HeightRequest="180"
+                               Aspect="AspectFit" />
+                    </Border>
+
+                    <Button Text="Sacar Foto con la Cámara"
+                            Command="{Binding TomarFotoCommand}"
+                            BackgroundColor="#1E88E5"
+                            TextColor="White"
+                            FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+
             <Label Text="{Binding MensajeEstado}" TextColor="#FFB347" FontAttributes="Italic" HorizontalTextAlignment="Center" Margin="0,4" />
 
             <!-- Botones de acción -->

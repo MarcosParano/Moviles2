@@ -27,6 +27,9 @@ namespace Moviles2.Models
         public bool EstaHabilitado { get; set; }
         public DateTime? FechaVencimiento { get; set; }
 
+        // Propiedad nueva para la foto del DNI / perfil
+        public string? RutaFotoDni { get; set; }
+
         public bool RequisitosCompletos()
         {
             return TieneDNI &&

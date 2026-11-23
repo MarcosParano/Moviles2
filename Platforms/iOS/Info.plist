@@ -28,5 +28,10 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
+	
+	<key>NSCameraUsageDescription</key>
+	<string>La aplicación necesita acceso a la cámara para fotografiar el DNI o perfil del vigilador.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>La aplicación necesita acceso a la galería para adjuntar documentación del trámite.</string>
 </dict>
 </plist>
